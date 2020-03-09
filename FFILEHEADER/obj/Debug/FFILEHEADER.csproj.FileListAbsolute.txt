@@ -1,0 +1,9 @@
+C:\Projects\FFILEHEADER\FFILEHEADER\bin\Debug\FFILEHEADER.exe.config
+C:\Projects\FFILEHEADER\FFILEHEADER\bin\Debug\FFILEHEADER.exe
+C:\Projects\FFILEHEADER\FFILEHEADER\bin\Debug\FFILEHEADER.pdb
+C:\Projects\FFILEHEADER\FFILEHEADER\obj\Debug\FFILEHEADER.FormMain.resources
+C:\Projects\FFILEHEADER\FFILEHEADER\obj\Debug\FFILEHEADER.Properties.Resources.resources
+C:\Projects\FFILEHEADER\FFILEHEADER\obj\Debug\FFILEHEADER.csproj.GenerateResource.Cache
+C:\Projects\FFILEHEADER\FFILEHEADER\obj\Debug\FFILEHEADER.exe
+C:\Projects\FFILEHEADER\FFILEHEADER\obj\Debug\FFILEHEADER.pdb
+C:\Projects\FFILEHEADER\FFILEHEADER\obj\Debug\FFILEHEADER.csprojResolveAssemblyReference.cache
