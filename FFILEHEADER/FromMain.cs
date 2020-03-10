@@ -28,20 +28,46 @@ namespace FFILEHEADER
 
         private void buttonReadFile_Click(object sender, EventArgs e)
         {
-            openFD.ShowDialog();
-            string filename = openFD.FileName;
-            tbSelectedFile.Text = filename;
-            readheader(filename);
-            loadtotable(listBoxSrc);
-            LoadChangeList();
-            LoadControlList();
+            tbSelectedFile.Text = "";
+            listBoxSrc.Items.Clear();
+            listBoxChng.Items.Clear();
+            listControl.Items.Clear();
+            listBoxResult.Items.Clear();
+            if (openFD.ShowDialog() == DialogResult.OK)
+            {
+                string filename = openFD.FileName;
+                tbSelectedFile.Text = filename;
+                readheader(filename);
+                loadtotable(listBoxSrc);
+                LoadChangeList();
+                LoadControlList();
+                CopyFileToArchive(filename);
+            }
+            else
+            {
+                MessageBox.Show("No file was selected!");
+            }
+        }
 
+        private void CopyFileToArchive(string filename)
+        {
+            // file to archive so original is saved
+            //string text = "this is test";
+            //System.IO.File.WriteAllText(@"c:\inst-dsk\newfile.txt", text);
+
+            FileInfo f = new FileInfo(filename);
+            string dirname = f.DirectoryName;
+            string fname = f.Name;
+            //MessageBox.Show(fullname);
+            string sourcepath = dirname + "\\";
+            string destination = dirname + "\\Archive";
+            File.Copy(sourcepath+"\\"+fname,destination+"\\"+fname);
         }
         private void LoadChangeList()
         {
             string sqlstr = "select Id,a.ColumnName,b.Cnt from fileColumns a inner join "
             + "(select ColumnName,count(1) cnt from filecolumns group by ColumnName having count(ColumnName)>1) b "
-            + " on a.ColumnName = b.ColumnName order by a.ColumnName "; // this query give us reference id for update
+            + " on a.ColumnName = b.ColumnName order by a.ColumnName ,Id"; // this query give us reference id for update
             string connstr = GetConnectionString();
             listBoxChng.Items.Clear();
             using (SqlConnection conn = new SqlConnection())
@@ -54,7 +80,7 @@ namespace FFILEHEADER
                 da.Fill(dt);
                 foreach (DataRow row in dt.Rows)
                 {
-                    listBoxChng.Items.Add(row["ColumnName"].ToString());
+                    listBoxChng.Items.Add(string.Format("{0}-{1}", Int32.Parse(row["Id"].ToString()), row["ColumnName"].ToString()));
                 }
             }
         }
@@ -90,6 +116,7 @@ namespace FFILEHEADER
             string str;
             // have to use Datatable, using reader was not successfull.
             */
+            listBoxResult.Items.Clear();
             for (int i = 0; i < listControl.Items.Count; i++)
             {
 
@@ -98,17 +125,22 @@ namespace FFILEHEADER
                 for (int j = 0; j < listBoxChng.Items.Count; j++)
                 {
 
-                    string chkstr = listBoxChng.Items[j].ToString();
-                    if (chkstr.Equals(sValue))
+                    string[] chkstr = listBoxChng.Items[j].ToString().Split('-');
+                    if (chkstr[1].Equals(sValue))
                     {
                         x++;
                         if (x == 0)
                         {
-                            listBoxResult.Items.Add(string.Format("{0}", listBoxChng.Items[j].ToString()));
+                            listBoxResult.Items.Add(string.Format("{0}", chkstr[1])); //listBoxChng.Items[j].ToString()));
                         }
                         else
                         {
-                            listBoxResult.Items.Add(string.Format("{0}_{1}", listBoxChng.Items[j].ToString(), x.ToString()));
+                            string newhead = string.Format("{0}_{1}", listBoxChng.Items[j].ToString(), x.ToString());
+                            string[] NewItem = newhead.Split('-'); //newhead.Substring(1,newhead.IndexOf('-')-1);
+                            string Id = NewItem[0];
+                            string Item = NewItem[1];
+                            listBoxResult.Items.Add(Item);
+                            updateHeader(Id, Item);
                         }
                     }
                 }
@@ -168,14 +200,13 @@ namespace FFILEHEADER
             TextFieldParser par = new TextFieldParser(new StreamReader(@filename));
             par.HasFieldsEnclosedInQuotes = true;
             par.SetDelimiters(",");
-            string strline = "";
             string[] _values = null;
             int row = 0;
             listBoxSrc.Items.Clear();
             while (!par.EndOfData)
             {
 
-                strline = "";
+
                 _values = par.ReadFields();
                 string fldstring;
                 if (row == 0)
@@ -255,6 +286,92 @@ namespace FFILEHEADER
             // you can retrieve it from a configuration file.
             // your database and connection.
             return "Data Source=LT-MRIZKI;Initial Catalog=UTILS;User Id=nu;password=nu;"; // providerName=System.Data.SqlClient";
+        }
+
+        private void buttonBuildFile_Click(object sender, EventArgs e)
+        {
+            string sfilename = tbSelectedFile.Text;
+            string headerline = ConstructHeader();
+            RecreateFile(sfilename, headerline);
+
+        }
+
+        private void RecreateFile(string sfilename, string headerline)
+        {
+            // Call database 
+            // Join all columns one by one
+            //string fileName = "test.txt";
+            FileInfo f = new FileInfo(sfilename);
+            string fullPath = f.DirectoryName;
+            string headerFile = fullPath + "\\" + "tempHeader.csv";
+            
+            //MessageBox.Show(headerline+" "+headerFile);
+            File.WriteAllText(@headerFile, headerline + "\n");
+
+            File.WriteAllLines(sfilename, File.ReadAllLines(sfilename).Skip(1));
+
+            using (StreamWriter file = new StreamWriter(@headerFile, true))
+            {
+                foreach (string line in File.ReadAllLines(sfilename))
+                {
+                    // If the line doesn't contain the word 'Second', write the line to the file.
+                    //if (!line.Contains("Second"))
+                    //{
+                    //MessageBox.Show(line);
+                    file.WriteLine(line);
+                    //}
+                }
+            }
+            // make Original File as .clo extension
+            var result = Path.ChangeExtension(@sfilename, ".old");
+            //MessageBox.Show(result);
+            // now move temp file to original file name  
+            File.Move(@sfilename, @result);
+            File.Move(@headerFile, @sfilename);
+            MessageBox.Show("Done!");
+        }
+
+        private string ConstructHeader()
+        {
+
+
+            string headerString;
+            // Call database
+            // join cll columns in one column string
+            // remove old reader 
+            // replace it with new hedersString;
+            // message user that it is done
+
+            string connectionString = GetConnectionString();
+            using (SqlConnection connection = new SqlConnection())
+            {
+                connection.ConnectionString = connectionString;
+                connection.Open();
+                string sqlstr = "select ColumnName from filecolumns order by id";
+                SqlCommand cmd = new SqlCommand(sqlstr, connection);
+
+                var reader = cmd.ExecuteReader();
+                string tempHead = "";
+                string checkstr = "";
+                while (reader.Read())
+                {
+                    checkstr = reader[0].ToString();
+                    if (checkstr.IndexOf(",") > 0)
+                    {
+                        tempHead += "\"" + reader[0].ToString() + "\",";
+                    }
+                    else
+                    {
+                        tempHead += reader[0] + ",";
+                    }
+                }
+                StringBuilder sb = new StringBuilder(tempHead);
+                sb.Remove(tempHead.Length - 1, 1);
+                headerString = sb.ToString();
+                connection.Close();
+            }
+            //MessageBox.Show(headerString);
+            return headerString;
         }
     }
 }

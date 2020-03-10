@@ -40,6 +40,7 @@
             this.labelcolcount = new System.Windows.Forms.Label();
             this.labelCount = new System.Windows.Forms.Label();
             this.listControl = new System.Windows.Forms.ListBox();
+            this.buttonBuildFile = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // listBoxSrc
@@ -91,7 +92,7 @@
             // 
             // buttonExit
             // 
-            this.buttonExit.Location = new System.Drawing.Point(361, 23);
+            this.buttonExit.Location = new System.Drawing.Point(557, 23);
             this.buttonExit.Name = "buttonExit";
             this.buttonExit.Size = new System.Drawing.Size(125, 32);
             this.buttonExit.TabIndex = 1;
@@ -124,7 +125,7 @@
             // labelcolcount
             // 
             this.labelcolcount.AutoSize = true;
-            this.labelcolcount.Location = new System.Drawing.Point(509, 29);
+            this.labelcolcount.Location = new System.Drawing.Point(704, 29);
             this.labelcolcount.Name = "labelcolcount";
             this.labelcolcount.Size = new System.Drawing.Size(121, 20);
             this.labelcolcount.TabIndex = 4;
@@ -133,7 +134,7 @@
             // labelCount
             // 
             this.labelCount.AutoSize = true;
-            this.labelCount.Location = new System.Drawing.Point(878, 34);
+            this.labelCount.Location = new System.Drawing.Point(843, 29);
             this.labelCount.Name = "labelCount";
             this.labelCount.Size = new System.Drawing.Size(52, 20);
             this.labelCount.TabIndex = 5;
@@ -148,6 +149,16 @@
             this.listControl.Size = new System.Drawing.Size(279, 284);
             this.listControl.TabIndex = 0;
             // 
+            // buttonBuildFile
+            // 
+            this.buttonBuildFile.Location = new System.Drawing.Point(351, 23);
+            this.buttonBuildFile.Name = "buttonBuildFile";
+            this.buttonBuildFile.Size = new System.Drawing.Size(125, 32);
+            this.buttonBuildFile.TabIndex = 1;
+            this.buttonBuildFile.Text = "Build File";
+            this.buttonBuildFile.UseVisualStyleBackColor = true;
+            this.buttonBuildFile.Click += new System.EventHandler(this.buttonBuildFile_Click);
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -158,6 +169,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.tbSelectedFile);
             this.Controls.Add(this.buttonExit);
+            this.Controls.Add(this.buttonBuildFile);
             this.Controls.Add(this.buttonProcess);
             this.Controls.Add(this.buttonReadFile);
             this.Controls.Add(this.listBoxResult);
@@ -185,6 +197,7 @@
         private System.Windows.Forms.Label labelcolcount;
         private System.Windows.Forms.Label labelCount;
         private System.Windows.Forms.ListBox listControl;
+        private System.Windows.Forms.Button buttonBuildFile;
     }
 }
 
