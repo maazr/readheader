@@ -1,0 +1,4 @@
+** Project requirement **
+Build on Microsoft Visual Studio 2013
+Freamwork use .NET Framwork4.5
+Special library use Microsoft.VisualBasic.FileIO;
